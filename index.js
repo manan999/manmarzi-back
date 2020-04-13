@@ -1,32 +1,41 @@
 const exp = require('express') ;
+const cors = require('cors') ;
 const http = require('http') ;
 const socketio = require('socket.io') ;
 const Filter = require('bad-words') ;
 
 const bw = require('./bw.js') ;
-// require('./src/Mongoose.js') ;
+require('./src/connect.js') ;
+const userHandler = require('./handlers/userHandler.js') ;
+const loginHandler = require('./handlers/loginHandler.js') ;
+const imageHandler = require('./handlers/imageHandler.js') ;
 
 const app = exp() ;
 const server = http.createServer(app) ;
 const io = socketio(server)
 
 app.use(exp.json()) ;
+app.use(cors()) ;
 
 let msgs = [] ;
 
 const filter = new Filter() ;
 filter.addWords(...bw) ;
 
-io.on('connection', socket => {
-	console.log('Connected to Web Socket');
+app.use(userHandler) ;
+app.use(loginHandler) ;
+app.use(imageHandler) ;
 
-	socket.emit('ping', {msgs} ) ;
+// io.on('connection', socket => {
+// 	console.log('Connected to Web Socket');
 
-	socket.on('message', data => {		
-		msgs = [...msgs, filter.clean(data.msg)] ;
-		io.emit('ping', {msgs} ) ;
-	})
-})
+// 	socket.emit('ping', {msgs} ) ;
+
+// 	socket.on('message', data => {		
+// 		msgs = [...msgs, filter.clean(data.msg)] ;
+// 		io.emit('ping', {msgs} ) ;
+// 	})
+// })
 
 app.get('/', (req, res) => {
 	console.log(req.body) ;
