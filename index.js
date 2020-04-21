@@ -9,6 +9,7 @@ require('./src/connect.js') ;
 const userHandler = require('./handlers/userHandler.js') ;
 const loginHandler = require('./handlers/loginHandler.js') ;
 const imageHandler = require('./handlers/imageHandler.js') ;
+const searchHandler = require('./handlers/searchHandler.js') ;
 
 const app = exp() ;
 const server = http.createServer(app) ;
@@ -25,6 +26,7 @@ filter.addWords(...bw) ;
 app.use(userHandler) ;
 app.use(loginHandler) ;
 app.use(imageHandler) ;
+app.use(searchHandler) ;
 
 // io.on('connection', socket => {
 // 	console.log('Connected to Web Socket');

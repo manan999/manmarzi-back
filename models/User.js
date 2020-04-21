@@ -59,9 +59,23 @@ const UserSchema = new mongoose.Schema({
 	chats: [String],
 	friends: [String],
 	pending: [String],
+	blocked: [String],
+	received: [String],
+	notif: [{	}] ,
+	dob: {  } ,
+	settings : { } ,
+	interest: {
+		type: String,
+		trim: true,
+	},
+	hobbies : {
+		type: String,
+		trim: true,
+	},
 	image: {
 		type: String,
 		trim: true,
+		default: 'https://raw.githubusercontent.com/manan999/images/master/wp/cs_s.jpg'
 	}
 }, { 
 	timestamps: true
@@ -83,13 +97,22 @@ UserSchema.statics.findByEmail = async function(email, password){
 	}
 }
 
-UserSchema.statics.findByUsername = async function(username){
-	const user = await User.findOne( {username} )
+UserSchema.statics.findByUserName = async function(username){
+	const users = await User.find({ username: new RegExp(username, 'ig') }, 'name username image' );
 
-	if(!user)
+	if(users.length <= 0)
 		throw new Error("User with this UserName does not exist") ;
 	else
-		return user ;
+		return users ;
+}
+
+UserSchema.statics.findByName = async function(name){
+	const users = await User.find({ name: new RegExp(name, 'ig') }, 'name username image' );
+
+	if(users.length <= 0)
+		throw new Error("User with this Name does not exist") ;
+	else
+		return users ;
 }
 
 UserSchema.methods.generateAuthToken = function(){
@@ -98,11 +121,6 @@ UserSchema.methods.generateAuthToken = function(){
 	this.save() ;
 	return token ;
 }
-
-// UserSchema.methods.uploaded = function(){
-// 	this.uploads = this.uploads + 1 ;
-// 	this.save() ;
-// }
 
 //Comment this method while debugging
 UserSchema.methods.toJSON = function(){
