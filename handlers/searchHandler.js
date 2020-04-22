@@ -5,7 +5,7 @@ const auth = require('../src/auth.js') ;
 
 const router = new exp.Router() ;
 
-checkTypeFilter = (type, filter) => {
+checkTypeFilter = (type, filter, q) => {
 	if(type === 'User')
 	{
 		if(filter === 'Name')
@@ -20,23 +20,20 @@ checkTypeFilter = (type, filter) => {
 }
 
 router.get('/search', auth, (req, res) => {
-	const {q, filter, type} = req.params ;
+	const {q, filter, type} = req.query ;
 	console.log(req.user.name+' is searching for '+type+' '+filter+' containing '+ q) ;
 
 	let user = {} ;
 
 	checkTypeFilter(type, filter, q)
-	// User.findByEmail(email, password)
-	// .then(userr => {
-	// 	user = userr ;
-	// 	return userr.generateAuthToken() ;
-	// })
-	// .then(token => {
-	// 	console.log('user login token generated')
-	// 	const obj = {token, user} ;
-	// 	res.json(obj); 
-	// })
-	// .catch(err => res.status(400).json('Incorrect Email Or Password') ) ;
+	.then(data => {
+		if(data.length > 0)
+			res.json(data)
+		else
+			throw new Error('No Search Results Found') ;
+	})
+	.catch(err => res.status(404).json('No Search Results') ) ;
+	
 }) ;
 
 module.exports = router ;
